@@ -1,16 +1,30 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, TextInput } from "react-native";
+import PropTypes from 'prop-types';
+
 const { height, width } = Dimensions.get("window");
 
 export default class ToDo extends React.Component{
-  state = {
-    isEditing: false,
-    isCompleted: false,
-    todoValue: ''
+  constructor(props){
+    super(props);
+    this.state = {
+      isEditing: false,
+      todoValue: props.text,
+    }
   }
+  static propTypes = {
+    text: PropTypes.string.isRequired,
+    isCompleted: PropTypes.bool.isRequired,
+    deleteTodo: PropTypes.func.isRequired,
+    id: PropTypes.string.isRequired,
+    completeTodo: PropTypes.func.isRequired,
+    uncompleteTodo: PropTypes.func.isRequired,
+    updateTodo: PropTypes.func.isRequired
+  }
+
   render(){
-    const { isCompleted, isEditing, todoValue } = this.state;
-    const { text } = this.props;
+    const { isEditing, todoValue } = this.state;
+    const { text, id, deleteTodo, isCompleted } = this.props;
     return (  
       <View style={styles.container}>
         <View style={styles.column}>
@@ -58,7 +72,7 @@ export default class ToDo extends React.Component{
               <Text style={styles.actionsText}>✏️</Text>
             </View>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPressOut={() => deleteTodo(id)}>
               <View style={styles.actionsContainer}>
                 <Text style={styles.actionsText}>❌</Text>
               </View>
@@ -70,20 +84,22 @@ export default class ToDo extends React.Component{
     )
   }
   _toggleComplete = () => {
-    this.setState( prevState => {
-      return {
-        isCompleted: !prevState.isCompleted
-      }
-    })
+    const { isCompleted, completeTodo, uncompleteTodo, id } = this.props;
+    if( isCompleted ){
+      uncompleteTodo(id);
+    }else{
+      completeTodo(id);
+    }
   }
   _startEditing = () => {
-    const { text } = this.props;
     this.setState({
-      isEditing: true,
-      todoValue: text
+      isEditing: true
     })
   }
   _finishEditing = () => {
+    const { todoValue } = this.state;
+    const { id, updateTodo } = this.props;
+    updateTodo(id, todoValue);
     this.setState({
       isEditing: false
     })
@@ -132,7 +148,6 @@ const styles = StyleSheet.create({
   column: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     width: width / 2
   },
   actions: {
