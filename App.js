@@ -14,7 +14,7 @@ import ToDo from './todo';
 import { AppLoading } from "expo";
 import uuidv1 from "uuid/v1"
 
-const { height, width } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 export default class App extends React.Component {
   state = {
@@ -28,7 +28,7 @@ export default class App extends React.Component {
   _loadedTodos = async () => {
     try {
       const toDos = await AsyncStorage.getItem("toDos")
-      console.log("mu", toDos)
+      console.log("items in storage: ", toDos)
       this.setState({
         loadedToDos: true,
         toDos: JSON.parse(toDos)
@@ -136,7 +136,7 @@ export default class App extends React.Component {
     const { newToDo, loadedToDos, toDos } = this.state;
     console.log(toDos)
     if(!loadedToDos){
-      return <AppLoading />
+      return <AppLoading /> 
     }
     return (
       <View style={styles.container}>
