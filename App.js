@@ -25,10 +25,17 @@ export default class App extends React.Component {
   componentDidMount = () => {
     this._loadedTodos();
   }
-  _loadedTodos = () => {
-    this.setState({
-      loadedToDos: true
-    })
+  _loadedTodos = async () => {
+    try {
+      const toDos = await AsyncStorage.getItem("toDos")
+      console.log("mu", toDos)
+      this.setState({
+        loadedToDos: true,
+        toDos: JSON.parse(toDos)
+      })
+    } catch(err) {
+      console.log(err)
+    }
   } 
   _addToDo = () => {
     const { newToDo } = this.state;
@@ -55,21 +62,6 @@ export default class App extends React.Component {
         return {...newState};
       })
     } 
-
-    // const toDos = {
-    //   5465132 : {
-    //     id: 5465132,
-    //     text: "hey",
-    //     isCompleted: false,
-    //     date: 23212
-    //   },
-    //   213245 : {
-    //     id: 213245,
-    //     text: "hey",
-    //     isCompleted: false,
-    //     date: 23212
-    //   }
-    // }
   }
   _deleteToDo = (id) => {
    this.setState(prevState => {
@@ -138,7 +130,6 @@ export default class App extends React.Component {
     })
   }
   _saveToDos = (newToDos) => {
-    console.log(newToDos);
     const saveTodos = AsyncStorage.setItem("toDos", JSON.stringify(newToDos));
   }
   render() {
@@ -163,7 +154,9 @@ export default class App extends React.Component {
             onSubmitEditing={this._addToDo}
           />
           <ScrollView contentContainerStyle={styles.toDos}> 
-            {Object.values(toDos).map( toDo => 
+            {Object.values(toDos)
+              .reverse()
+              .map( toDo => 
             <ToDo 
               key={toDo.id} 
               deleteTodo={this._deleteToDo} 
