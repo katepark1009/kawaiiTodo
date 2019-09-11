@@ -7,4 +7,4 @@ You can add, delete, update and toggle complete.
 
 *[Demo]*
 
-![](demo.gif)
+![](demo_kawaiiTodo.gif)
